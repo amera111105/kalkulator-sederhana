@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalkulator Sederhana</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f0f0f0; font-family: sans-serif; }
+    .calc-wrap { width: 300px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .display { background: #1a1a2e; padding: 1.5rem 1rem 1rem; text-align: right; }
+    .display .expr { font-size: 13px; color: #aaa; min-height: 18px; }
+    .display .result { font-size: 40px; font-weight: 400; color: #fff; word-break: break-all; }
+    .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #ddd; }
+    .btn { padding: 20px 0; font-size: 18px; border: none; cursor: pointer; background: #fff; color: #222; transition: background 0.1s; }
+    .btn:active { background: #eee; }
+    .btn.op { color: #185FA5; font-weight: 500; }
+    .btn.special { background: #f5f5f5; color: #555; }
+    .btn.equals { background: #185FA5; color: #fff; }
+    .btn.equals:active { background: #0c447c; }
+  </style>
+</head>
+<body>
+  <div class="calc-wrap">
+    <div class="display">
+      <div class="expr" id="expr"></div>
+      <div class="result" id="result">0</div>
+    </div>
+    <div class="buttons">
+      <button class="btn special" onclick="clearAll()">AC</button>
+      <button class="btn special" onclick="toggleSign()">+/-</button>
+      <button class="btn special" onclick="percent()">%</button>
+      <button class="btn op" onclick="inputOp('/')">÷</button>
+
+      <button class="btn" onclick="inputNum('7')">7</button>
+      <button class="btn" onclick="inputNum('8')">8</button>
+      <button class="btn" onclick="inputNum('9')">9</button>
+      <button class="btn op" onclick="inputOp('*')">×</button>
+
+      <button class="btn" onclick="inputNum('4')">4</button>
+      <button class="btn" onclick="inputNum('5')">5</button>
+      <button class="btn" onclick="inputNum('6')">6</button>
+      <button class="btn op" onclick="inputOp('-')">−</button>
+
+      <button class="btn" onclick="inputNum('1')">1</button>
+      <button class="btn" onclick="inputNum('2')">2</button>
+      <button class="btn" onclick="inputNum('3')">3</button>
+      <button class="btn op" onclick="inputOp('+')">+</button>
+
+      <button class="btn" style="grid-column: span 2;" onclick="inputNum('0')">0</button>
+      <button class="btn" onclick="inputDot()">.</button>
+      <button class="btn equals" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    let current = '0', prev = '', operator = '', justCalc = false;
+
+    function updateDisplay() {
+      document.getElementById('result').textContent = current;
+      document.getElementById('expr').textContent = prev && operator ? prev + ' ' + (operator === '*' ? '×' : operator === '/' ? '÷' : operator) : '';
+    }
+
+    function inputNum(n) {
+      if (justCalc) { current = n; justCalc = false; }
+      else current = current === '0' ? n : current + n;
+      updateDisplay();
+    }
+
+    function inputDot() {
+      if (justCalc) { current = '0.'; justCalc = false; }
+      else if (!current.includes('.')) current += '.';
+      updateDisplay();
+    }
+
+    function inputOp(op) {
+      if (prev && operator && !justCalc) calculate(true);
+      prev = current; operator = op; justCalc = false;
+      current = '0';
+      updateDisplay();
+    }
+
+    function calculate(chain) {
+      if (!operator || !prev) return;
+      let a = parseFloat(prev), b = parseFloat(current), res;
+      if (operator === '+') res = a + b;
+      else if (operator === '-') res = a - b;
+      else if (operator === '*') res = a * b;
+      else if (operator === '/') res = b === 0 ? 'Error' : a / b;
+      current = typeof res === 'number' ? parseFloat(res.toFixed(10)).toString() : res;
+      if (!chain) { prev = ''; operator = ''; justCalc = true; }
+      updateDisplay();
+    }
+
+    function clearAll() { current = '0'; prev = ''; operator = ''; justCalc = false; updateDisplay(); }
+    function toggleSign() { if (current !== '0') current = current.startsWith('-') ? current.slice(1) : '-' + current; updateDisplay(); }
+    function percent() { current = (parseFloat(current) / 100).toString(); updateDisplay(); }
+  </script>
+</body>
+</html>
