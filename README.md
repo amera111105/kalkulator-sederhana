@@ -1,2 +1,2 @@
-# kalkulator-sederhana
-Kalkulator sederhana berbasis web
+## Kalkulator Sederhana
+Web kalkulator sederhana menggunakan HTML, CSS, dan JavaScript.
